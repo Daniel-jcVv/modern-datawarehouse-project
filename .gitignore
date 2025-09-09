@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.env
+venv/
+.venv/
+
+# SQL Server
+*.bak
+*.ldf
+*.mdf
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (sensitive)
+data_sets/*.csv
+!data_sets/sample_*.csv
