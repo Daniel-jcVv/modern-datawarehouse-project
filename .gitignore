@@ -26,6 +26,9 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Data (sensitive)
-data_sets/*.csv
-!data_sets/sample_*.csv
+
+# context and sensitive data
+context/
+*.md.backup
+
+
