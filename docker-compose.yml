@@ -1,0 +1,49 @@
+# ===================================================================
+# Docker Compose - Simplified Configuration for Reliable Startup
+# ===================================================================
+# Purpose: Minimal viable SQL Server setup for development
+# Strategy: Remove complex volume mappings and resource limits
+# Focus: Get SQL Server running reliably first, optimize later
+# ===================================================================
+
+services:
+  # ================================================================
+  # SQL Server 2022 - Minimal Configuration
+  # ================================================================
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: datawarehouse-sql-server
+    
+    # Essential environment variables only
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_PID: Express
+      SA_PASSWORD: ${SQL_SERVER_PASSWORD}
+      
+    # Port mapping for external access
+    ports:
+      - "1434:1433"
+    
+    # Essential volume for data persistence only
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./data_sets:/data_sets:ro
+      - ./sql:/sql:ro
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Simplified health check
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${SQL_SERVER_PASSWORD}' -Q 'SELECT 1' -C -N"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+# ================================================================
+# Volume Configuration
+# ================================================================
+volumes:
+  sqlserver_data:
+    driver: local

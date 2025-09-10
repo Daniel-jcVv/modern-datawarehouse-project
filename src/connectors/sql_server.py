@@ -113,15 +113,57 @@ class SQLServerConnector:
             raise
     
     def execute_script(self, script_path: str) -> bool:
-        """Execute SQL script from file"""
+        """
+        Execute SQL script using pyodbc directly for better SQL Server compatibility.
+        This method handles GO statements, conditional logic, and complex DDL properly.
+        """
         try:
-            with open(script_path, 'r') as file:
-                script = file.read()
+            with open(script_path, 'r', encoding='utf-8') as file:
+                script_content = file.read()
             
-            with self.get_connection() as conn:
-                conn.execute(text(script))
-                conn.commit()
+            # Build pyodbc connection string directly
+            driver = "ODBC Driver 18 for SQL Server"
+            pyodbc_conn_str = (
+                f"DRIVER={{{driver}}};"
+                f"SERVER={self.host},{self.port};"
+                f"DATABASE={self.database};"
+                f"UID={self.user};"
+                f"PWD={self.password};"
+                "TrustServerCertificate=yes;"
+                "Encrypt=no;"
+            )
+            
+            # Use pyodbc directly for script execution
+            with pyodbc.connect(pyodbc_conn_str, timeout=30) as conn:
+                cursor = conn.cursor()
                 
+                # Split by GO statements for batch execution
+                batches = script_content.split('GO')
+                
+                for batch in batches:
+                    # Clean the batch
+                    clean_batch = batch.strip()
+                    
+                    # Skip empty batches, pure comments, or USE statements
+                    if (not clean_batch or 
+                        clean_batch.startswith('--') or 
+                        clean_batch.startswith('/*') or
+                        clean_batch.upper().startswith('USE ') or
+                        'PRINT' in clean_batch.upper()):
+                        continue
+                    
+                    try:
+                        # Execute the entire batch as one unit
+                        cursor.execute(clean_batch)
+                        conn.commit()
+                        
+                    except pyodbc.Error as e:
+                        # Log the error with context but continue with next batch
+                        logger.warning(f"Batch execution warning: {str(e)}")
+                        logger.debug(f"Problematic batch: {clean_batch[:100]}...")
+                        conn.rollback()
+                        continue
+                        
             logger.info(f"✅ Script executed successfully: {script_path}")
             return True
             

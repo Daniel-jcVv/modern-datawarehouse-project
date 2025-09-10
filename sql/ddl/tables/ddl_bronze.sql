@@ -18,7 +18,7 @@ Prerequisites:
     - DDL execution privileges on target database
     - Bronze schema must exist or be created prior to execution
 
-Created: 2025-08-19
+Created: 2025-09-01
 Author: Juan Daniel Garcia Belman
 Version: 1.0
 ===============================================================================

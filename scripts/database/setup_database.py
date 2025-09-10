@@ -6,7 +6,10 @@ Handles SQL Server transaction limitations properly
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Add project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(project_root)
 
 import pyodbc
 from loguru import logger

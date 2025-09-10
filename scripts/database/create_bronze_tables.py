@@ -6,7 +6,10 @@ Execute DDL scripts to create bronze schema tables
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Add project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(project_root)
 
 from src.connectors.sql_server import db_connector
 from loguru import logger
