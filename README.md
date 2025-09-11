@@ -9,6 +9,17 @@
 
 Production-ready Data Warehouse implementation demonstrating **systematic Data Engineering problem-solving** through iterative architecture evolution. This project showcases real-world troubleshooting, infrastructure decision-making, and technical adaptability required in production environments.
 
+## 📊 Architecture & Implementation
+
+### Overall Data Warehouse Design
+![Data Architecture](docs/diagrams/data_architecture_DW.png)
+
+### Current Implementation (MVP 2) - Docker + Bronze Layer
+![Docker Bronze Architecture](docs/diagrams/docker-bronze-architecture.html)
+
+### Data Flow Process
+![Data Flow](docs/diagrams/data_flow.png)
+
 ## 🎯 Technical Evolution & Problem-Solving Journey
 
 ### Architecture Iteration Process
@@ -67,27 +78,6 @@ def execute_script(self, script_path: str) -> bool:
         cursor.execute(clean_batch)  # Maintains full context
 ```
 **Technical Impact:** Enables complex DDL execution matching SQL Server behavior
-
-## 📊 Current Architecture (MVP 2)
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Data Sources  │    │   Docker Stack   │    │  Client Tools   │
-├─────────────────┤    ├──────────────────┤    ├─────────────────┤
-│ • CSV Files     │───▶│ SQL Server 2022  │◀───│ • Python ETL    │
-│ • Future APIs   │    │ Port: 1434       │    │ • Azure Data    │
-│ • Streaming     │    │ Volume: Persist  │    │   Studio        │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │   DataWarehouse  │
-                    ├──────────────────┤
-                    │ • bronze schema  │
-                    │ • silver schema  │
-                    │ • gold schema    │
-                    └──────────────────┘
-```
 
 ## 🚀 Technology Stack Demonstrated
 
