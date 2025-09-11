@@ -15,10 +15,13 @@ Production-ready Data Warehouse implementation demonstrating **systematic Data E
 ![Data Architecture](docs/diagrams/data_architecture_DW.png)
 
 ### Current Implementation (MVP 2) - Docker + Bronze Layer
-![Docker Bronze Architecture](docs/diagrams/docker-bronze-architecture.html)
+![Docker Bronze Architecture](docs/diagrams/docker_bronze-architecture.png)
 
 ### Data Flow Process
 ![Data Flow](docs/diagrams/data_flow.png)
+
+### Data Integration & Table Relationships
+![Data Integration](docs/diagrams/data_integration_how_to_tables_related.png)
 
 ## 🎯 Technical Evolution & Problem-Solving Journey
 
