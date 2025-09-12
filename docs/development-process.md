@@ -12,7 +12,7 @@
 ### **Fase 2: Automatización Bronze (Día 2-3)**
 - Scripts DDL automatizados
 - Procedimientos de ingesta con manejo de errores
-- Logging y monitoreo (como en Telcel)
+- Logging y monitoreo
 
 ### **Fase 3: Silver Layer Inteligente (Día 4-5)**
 - Validaciones de calidad de datos (como en Citi Banamex)
