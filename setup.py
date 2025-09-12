@@ -25,14 +25,14 @@ def run_database_setup():
         ], capture_output=True, text=True, cwd='.')
         
         if result.returncode == 0:
-            logger.info("✅ Database setup completed")
+            logger.info("Database setup completed")
             return True
         else:
-            logger.error(f"❌ Database setup failed: {result.stderr}")
+            logger.error(f"Database setup failed: {result.stderr}")
             return False
             
     except Exception as e:
-        logger.error(f"❌ Database setup error: {str(e)}")
+        logger.error(f"Database setup error: {str(e)}")
         return False
 
 
