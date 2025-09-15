@@ -1,6 +1,6 @@
 # Modern Data Warehouse with SQL Server & Medallion Architecture
 
-![Status](https://img.shields.io/badge/Status-MVP%202%20Complete-brightgreen?style=flat-square)
+![Status](https://img.shields.io/badge/Status-MVP%203%20Complete-brightgreen?style=flat-square)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022%20Docker-blue?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.8+-orange?style=flat-square)
 ![Architecture](https://img.shields.io/badge/Architecture-Medallion-lightgrey?style=flat-square)
@@ -14,7 +14,7 @@ Production-ready Data Warehouse implementation demonstrating **systematic Data E
 ### Overall Data Warehouse Design
 ![Data Architecture](docs/diagrams/data_architecture_DW.png)
 
-### Current Implementation (MVP 2) - Docker + Bronze Layer
+### Current Implementation (MVP 3) - Docker + Bronze→Silver ETL Pipeline
 ![Docker Bronze Architecture](docs/diagrams/docker_bronze-architecture.png)
 
 ### Data Flow Process
@@ -104,15 +104,15 @@ def execute_script(self, script_path: str) -> bool:
 ## 📈 MVP Roadmap & Progress
 
 - [x] **MVP 1**: Foundation Setup *(Completed)*
-- [x] **MVP 2**: Docker Infrastructure + Bronze Layer *(Current)*
+- [x] **MVP 2**: Docker Infrastructure + Bronze Layer *(Completed)*
   - [x] Containerized SQL Server 2022
   - [x] Python integration with robust connection management
   - [x] Bronze schema with all tables operational
   - [x] Systematic troubleshooting and problem resolution
-- [ ] **MVP 3**: ETL Pipelines + Silver Layer *(Next)*
-  - [ ] Automated data transformation pipelines
-  - [ ] Data quality validation framework
-  - [ ] Error handling and monitoring
+- [x] **MVP 3**: ETL Pipelines + Silver Layer *(Completed)*
+  - [x] Automated data transformation pipelines
+  - [x] Data quality validation framework
+  - [x] Error handling and monitoring
 - [ ] **MVP 4**: Gold Layer + Analytics APIs *(Future)*
   - [ ] Dimensional modeling (star schema)
   - [ ] FastAPI endpoints for data consumption
@@ -140,8 +140,10 @@ docker-compose ps  # Should show "healthy"
 # Initialize database
 python setup.py
 
-# Test integration
-python test_docker_connection.py
+# Run pipeline
+python run_pipeline.py check
+python run_pipeline.py bronze
+python run_pipeline.py silver
 ```
 
 ## 🧪 Validation & Testing
@@ -152,9 +154,9 @@ python test_docker_connection.py
 docker-compose ps
 # Expected: datawarehouse-sql-server (healthy)
 
-# Connection test
-python test_docker_connection.py
-# Expected: ✅ Docker SQL Server integration successful!
+# Pipeline test
+python run_pipeline.py silver
+# Expected: ✅ Bronze→Silver ETL pipeline successful!
 ```
 
 ### Database Validation (Azure Data Studio)
@@ -183,13 +185,13 @@ This project demonstrates:
 
 ## 🔗 Repository Links
 
-- **Latest Release**: [mvp-2-complete](../../releases/tag/mvp-2-complete)
-- **Active Development**: [mvp/2-docker-etl](../../tree/mvp/2-docker-etl)
+- **Latest Release**: [mvp-3-silver-layer](../../releases/tag/mvp-3-silver-layer)
+- **Active Development**: [mvp/3-etl-pipelines](../../tree/mvp/3-etl-pipelines)
 - **Project Tracking**: [Context Documentation](./context/)
 
 ## 🏷️ Tags
 
-`data-warehouse` `sql-server` `docker` `medallion-architecture` `python` `etl` `data-engineering` `professional-development` `problem-solving` `infrastructure`
+`data-warehouse` `sql-server` `docker` `medallion-architecture` `python` `etl` `data-engineering` `professional-development` `problem-solving` `pipeline` `infrastructure`
 
 ---
 
