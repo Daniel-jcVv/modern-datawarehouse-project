@@ -48,11 +48,11 @@ def create_database_enterprise():
         cursor.execute("SELECT name FROM sys.databases WHERE name = 'DataWarehouse'")
         
         if cursor.fetchone():
-            logger.info("📋 DataWarehouse already exists")
+            logger.info("DataWarehouse already exists")
         else:
-            logger.info("🏗️  Creating DataWarehouse database...")
+            logger.info("Creating DataWarehouse database...")
             cursor.execute("CREATE DATABASE DataWarehouse")
-            logger.info("✅ DataWarehouse created successfully!")
+            logger.info("DataWarehouse created successfully!")
         
         cursor.close()
         conn.close()
@@ -70,19 +70,19 @@ def create_database_enterprise():
             # Check if schema exists
             cursor.execute(f"SELECT name FROM sys.schemas WHERE name = '{schema}'")
             if cursor.fetchone():
-                logger.info(f"📋 Schema '{schema}' already exists")
+                logger.info(f"Schema '{schema}' already exists")
             else:
                 cursor.execute(f"CREATE SCHEMA {schema}")
-                logger.info(f"✅ Schema '{schema}' created")
+                logger.info(f"Schema '{schema}' created")
         
         cursor.close()
         conn.close()
         
-        logger.info("🎉 Database and schemas setup completed!")
+        logger.info("Database and schemas setup completed!")
         return True
         
     except Exception as e:
-        logger.error(f"❌ Database creation error: {str(e)}")
+        logger.error(f"Database creation error: {str(e)}")
         return False
 
 
@@ -93,7 +93,7 @@ def verify_setup():
         from src.connectors.sql_server import db_connector
         
         if db_connector.test_connection():
-            logger.info("✅ Connection to DataWarehouse successful!")
+            logger.info("Connection to DataWarehouse successful!")
             
             # List schemas
             schemas = db_connector.execute_query("""
@@ -102,16 +102,16 @@ def verify_setup():
                 ORDER BY name
             """)
             
-            logger.info("📋 Available schemas:")
+            logger.info("Available schemas:")
             for schema in schemas:
-                logger.info(f"   ✅ {schema[0]}")
+                logger.info(f"   {schema[0]}")
                 
             return True
         else:
             return False
             
     except Exception as e:
-        logger.error(f"❌ Verification failed: {str(e)}")
+        logger.error(f"Verification failed: {str(e)}")
         return False
 
 
@@ -123,11 +123,11 @@ def main():
     if create_database_enterprise():
         # Verify everything works
         if verify_setup():
-            logger.info("🎉 Complete database setup successful!")
+            logger.info("Complete database setup successful!")
             logger.info("🔗 Ready to create Bronze layer tables")
             return True
     
-    logger.error("❌ Database setup failed")
+    logger.error("Database setup failed")
     return False
 
 
