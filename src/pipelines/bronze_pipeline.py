@@ -17,7 +17,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
 
 from src.etl.bronze_layer.bronze_data_loader import BronzeETLTypeSafe
-from src.validators.bronze_data_validator import BronzeDataValidator
+from src.quality_checks import QualityCheckBronze
 from src.connectors.sql_server import db_connector
 from loguru import logger
 import time
@@ -51,14 +51,14 @@ def main():
     
     # Step 3: Data validation
     logger.info("Step 3: Data Validation & Quality Assurance")
-    validator = BronzeDataValidator()
+    validator = QualityCheckBronze()
     validation_results = validator.run_full_validation()
-    
+
     if validation_results["summary"]["failed_tables"] > 0:
         logger.error("Data validation detected issues")
         logger.info("Check validation results above for details")
         sys.exit(1)
-    
+
     logger.success("All data validations passed")
     logger.info("-" * 50)
     

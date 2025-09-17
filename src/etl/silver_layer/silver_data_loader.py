@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Silver Layer Data Loader - Transform Bronze to Silver
 Executes stored procedures to transform and cleanse data from Bronze to Silver layer
@@ -19,6 +18,7 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(project_root))
 
 from src.connectors.sql_server import db_connector
+from sqlalchemy import text
 from loguru import logger
 
 
@@ -92,12 +92,11 @@ class SilverDataLoader:
             logger.info(f"Executing stored procedure: {self.stored_procedure}")
             
             # Execute the stored procedure
-            cursor = db_connector.execute_procedure(self.stored_procedure)
+            with db_connector.get_connection() as conn:
+                conn.execute(text(f"EXEC {self.stored_procedure}"))
+                conn.commit()
             
-            # Capture and log any output messages from the procedure
-            messages = []
-            while cursor.nextset():
-                pass  # Process all result sets
+            # Procedure executed successfully
             
             logger.success(f"Stored procedure {self.stored_procedure} executed successfully")
             return True
@@ -141,7 +140,9 @@ class SilverDataLoader:
                 # Here we would call individual transformation logic
                 # For now, we'll execute the full stored procedure once
                 if config['order'] == '[1/6]':  # Only execute SP once
-                    cursor = db_connector.execute_procedure(self.stored_procedure)
+                    with db_connector.get_connection() as conn:
+                        conn.execute(text(f"EXEC {self.stored_procedure}"))
+                        conn.commit()
                 
                 table_end_time = time.time()
                 

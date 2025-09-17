@@ -8,18 +8,18 @@ Purpose: Production pipeline for Silver layer data transformation
 Author: Data Engineering Team
 """
 
+
 import sys
 from pathlib import Path
 import time
+from loguru import logger
+from src.etl.silver_layer.silver_data_loader import SilverDataLoader
+from src.quality_checks.quality_check_silver import QualityCheckSilver
+from src.connectors.sql_server import db_connector
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
-
-from src.etl.silver_layer.silver_data_loader import SilverDataLoader
-from src.validators.silver_data_validator import SilverDataValidator
-from src.connectors.sql_server import db_connector
-from loguru import logger
 
 
 def main():
@@ -79,11 +79,13 @@ def main():
     
     # Step 4: Silver Data Quality Validation
     logger.info("Step 4: Silver Data Quality Validation")
-    validator = SilverDataValidator()
+    validator = QualityCheckSilver()
     validation_results = validator.run_full_validation()
     
     if not validation_results["summary"]["validation_passed"]:
-        logger.warning("WARNING: Some validation checks failed - review results")
+        logger.warning(
+            "WARNING: Some validation checks failed - review results"
+        )
         for issue in validation_results["summary"]["issues_found"]:
             logger.warning(f"  - {issue}")
     else:

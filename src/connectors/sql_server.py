@@ -90,13 +90,13 @@ class SQLServerConnector:
                 result = conn.execute(text("SELECT 1 as test"))
                 test_value = result.scalar()
                 if test_value == 1:
-                    logger.info("✅ SQL Server connection test successful")
+                    logger.info("SQL Server connection test successful")
                     return True
                 else:
-                    logger.error("❌ SQL Server connection test failed")
+                    logger.error("SQL Server connection test failed")
                     return False
         except Exception as e:
-            logger.error(f"❌ Connection test failed: {str(e)}")
+            logger.error(f"Connection test failed: {str(e)}")
             return False
     
     def execute_query(self, query: str, params: Dict[str, Any] = None) -> Any:
@@ -116,6 +116,7 @@ class SQLServerConnector:
         """
         Execute SQL script using pyodbc directly for better SQL Server compatibility.
         This method handles GO statements, conditional logic, and complex DDL properly.
+        Enhanced with better error handling and batch tracking.
         """
         try:
             with open(script_path, 'r', encoding='utf-8') as file:
@@ -140,7 +141,11 @@ class SQLServerConnector:
                 # Split by GO statements for batch execution
                 batches = script_content.split('GO')
                 
-                for batch in batches:
+                executed_batches = 0
+                skipped_batches = 0
+                failed_batches = 0
+                
+                for i, batch in enumerate(batches):
                     # Clean the batch
                     clean_batch = batch.strip()
                     
@@ -148,27 +153,56 @@ class SQLServerConnector:
                     if (not clean_batch or 
                         clean_batch.startswith('--') or 
                         clean_batch.startswith('/*') or
-                        clean_batch.upper().startswith('USE ') or
-                        'PRINT' in clean_batch.upper()):
+                        clean_batch.upper().startswith('USE ')):
+                        skipped_batches += 1
+                        continue
+                    
+                    # Remove PRINT statements from batch but keep other SQL
+                    lines = clean_batch.split('\n')
+                    sql_lines = []
+                    for line in lines:
+                        line_stripped = line.strip()
+                        if (not line_stripped.upper().startswith('PRINT ') and 
+                            not line_stripped.startswith('--') and
+                            line_stripped):
+                            sql_lines.append(line)
+                    
+                    clean_batch = '\n'.join(sql_lines).strip()
+                    
+                    # Skip if nothing left after removing PRINT statements
+                    if not clean_batch:
+                        skipped_batches += 1
                         continue
                     
                     try:
                         # Execute the entire batch as one unit
                         cursor.execute(clean_batch)
                         conn.commit()
+                        executed_batches += 1
                         
                     except pyodbc.Error as e:
                         # Log the error with context but continue with next batch
-                        logger.warning(f"Batch execution warning: {str(e)}")
-                        logger.debug(f"Problematic batch: {clean_batch[:100]}...")
+                        logger.warning(f"Batch {i+1} execution warning: {str(e)}")
+                        logger.debug(f"Problematic batch content: {clean_batch[:200]}...")
                         conn.rollback()
-                        continue
+                        failed_batches += 1
                         
-            logger.info(f"✅ Script executed successfully: {script_path}")
-            return True
+                        # If it's a critical table creation error, we might want to fail
+                        if "CREATE TABLE" in clean_batch.upper():
+                            logger.error(f"Critical: Table creation failed in batch {i+1}")
+                        
+                        continue
+            
+            logger.info(f"Script execution completed: {script_path}")
+            logger.info(f"  Executed: {executed_batches} batches")
+            logger.info(f"  Skipped: {skipped_batches} batches") 
+            logger.info(f"  Failed: {failed_batches} batches")
+            
+            # Consider it successful if we executed at least some batches
+            return executed_batches > 0
             
         except Exception as e:
-            logger.error(f"❌ Script execution failed: {str(e)}")
+            logger.error(f"Script execution failed: {str(e)}")
             return False
 
 

@@ -1,21 +1,10 @@
-#!/usr/bin/env python3
 """
-Initialize ETL Pipelines Module
-This __init__ file marks the pipelines directory as a Python package
+Data Pipeline Module
+Orchestrates ETL processes across Bronze, Silver, and Gold layers
 """
 
-from pathlib import Path
+from .bronze_pipeline import main as run_bronze_pipeline
+from .silver_pipeline import main as run_silver_pipeline
+from .gold_pipeline import main as run_gold_pipeline
 
-# Pipeline module metadata
-__version__ = "1.0.0"
-__author__ = "Data Engineering Team"
-
-# Define available pipelines
-AVAILABLE_PIPELINES = {
-    "bronze": "bronze_pipeline",
-    "silver": "silver_pipeline",  # Coming soon
-    "gold": "gold_pipeline"       # Coming soon
-}
-
-# Get the pipelines directory path
-PIPELINES_DIR = Path(__file__).parent
+__all__ = ["run_bronze_pipeline", "run_silver_pipeline", "run_gold_pipeline"]

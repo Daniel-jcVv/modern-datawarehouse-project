@@ -3,5 +3,8 @@ Silver Layer ETL Module
 Handles data transformation from Bronze to Silver layer
 """
 
-__version__ = "1.0.0"
-__author__ = "Data Engineering Team"
+
+from .silver_data_loader import SilverDataLoader
+from .silver_procedure import create_silver_procedure
+
+__all__ = ["SilverDataLoader", "create_silver_procedure"]

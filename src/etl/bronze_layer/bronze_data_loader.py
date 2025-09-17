@@ -204,9 +204,38 @@ class BronzeETLTypeSafe:
             logger.error(f"FAILED: {file_path} -> {str(e)}")
             return False
     
-    def run_bronze_etl(self) -> bool:
-        """Execute type-safe Bronze ETL pipeline with comprehensive logging"""
-        logger.info("Starting Type-Safe Bronze Layer ETL Pipeline")
+    def run_bronze_etl_with_procedure(self) -> bool:
+        """Execute Bronze ETL using stored procedure (enterprise pattern)"""
+        try:
+            logger.info("Starting Bronze ETL using stored procedure...")
+            
+            # Import and use the procedure pattern
+            from .bronze_procedure import execute_bronze_procedure, get_execution_log_summary
+            
+            # Execute the stored procedure
+            success = execute_bronze_procedure()
+            
+            if success:
+                logger.success("BRONZE LAYER ETL COMPLETED SUCCESSFULLY (Procedure)")
+                
+                # Show execution summary
+                get_execution_log_summary()
+                return True
+            else:
+                logger.error("BRONZE LAYER ETL FAILED (Procedure)")
+                return False
+                
+        except ImportError:
+            logger.warning("Bronze procedure not available, falling back to Python ETL")
+            return self.run_bronze_etl_python()
+        except Exception as e:
+            logger.error(f"Procedure execution failed: {e}")
+            logger.info("Falling back to Python ETL...")
+            return self.run_bronze_etl_python()
+
+    def run_bronze_etl_python(self) -> bool:
+        """Execute Bronze ETL using Python (original implementation)"""
+        logger.info("Starting Type-Safe Bronze Layer ETL Pipeline (Python)")
         logger.info("=" * 70)
         
         start_time = time.time()
@@ -229,12 +258,25 @@ class BronzeETLTypeSafe:
         logger.info(f"   Average time per file: {round(duration/total_files, 2)} seconds")
         
         if success_count == total_files:
-            logger.success("BRONZE LAYER ETL COMPLETED SUCCESSFULLY")
+            logger.success("BRONZE LAYER ETL COMPLETED SUCCESSFULLY (Python)")
             return True
         else:
             failed_count = total_files - success_count
             logger.error(f"BRONZE LAYER ETL FAILED: {failed_count} files could not be processed")
             return False
+
+    def run_bronze_etl(self, use_procedure: bool = True) -> bool:
+        """
+        Execute Bronze ETL pipeline with choice of implementation method
+        
+        Args:
+            use_procedure: If True, use stored procedure (enterprise pattern)
+                          If False, use Python implementation (original)
+        """
+        if use_procedure:
+            return self.run_bronze_etl_with_procedure()
+        else:
+            return self.run_bronze_etl_python()
 
 def main():
     """Execute the type-safe Bronze ETL pipeline"""

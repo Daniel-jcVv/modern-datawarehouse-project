@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 Create Silver Stored Procedure Directly
 """
@@ -12,6 +12,7 @@ sys.path.append(str(project_root))
 
 from src.connectors.sql_server import db_connector
 from loguru import logger
+
 
 def create_silver_procedure():
     """Create the silver.load_silver stored procedure"""
@@ -186,6 +187,7 @@ END
     except Exception as e:
         logger.error(f"Error creating procedure: {e}")
         return False
+
 
 if __name__ == "__main__":
     # When run directly, create the procedure and show status
