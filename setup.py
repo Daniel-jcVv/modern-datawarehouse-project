@@ -1,6 +1,7 @@
 """
 Master Setup Script for DataWarehouse
-Complete database and bronze layer initialization
+Creates database, schemas, and tables for Bronze and Silver layers
+Orchestrates individual setup scripts
 """
 
 import sys
@@ -38,24 +39,42 @@ def run_database_setup():
 
 def run_bronze_tables():
     """Create bronze tables"""
-    logger.info("📋 Step 2: Bronze Layer Table Creation")
+    logger.info("Step 2: Bronze Layer Table Creation")
     
     try:
-        import subprocess
-        result = subprocess.run([
-            sys.executable, 
-            'scripts/database/create_bronze_tables.py'
-        ], capture_output=True, text=True, cwd='.')
+        # Import and run bronze table creation directly
+        sys.path.append('scripts/database')
+        from create_bronze_tables import create_bronze_tables
         
-        if result.returncode == 0:
-            logger.info("Bronze tables created")
-            return True
+        success = create_bronze_tables()
+        if success:
+            logger.info("Bronze tables creation completed")
         else:
-            logger.error(f"Bronze tables creation failed: {result.stderr}")
-            return False
+            logger.error("Bronze tables creation failed")
+        return success
             
     except Exception as e:
         logger.error(f"Bronze tables error: {str(e)}")
+        return False
+
+
+def run_silver_tables():
+    """Create silver tables"""
+    logger.info("Step 3: Silver Layer Table Creation")
+    
+    try:
+        # Import and run silver table creation directly
+        from create_silver_tables import create_silver_tables
+        
+        success = create_silver_tables()
+        if success:
+            logger.info("Silver tables creation completed")
+        else:
+            logger.error("Silver tables creation failed")
+        return success
+            
+    except Exception as e:
+        logger.error(f"Silver tables error: {str(e)}")
         return False
 
 
@@ -74,9 +93,14 @@ def main():
         logger.error("Setup failed at bronze tables creation")
         return False
     
+    # Step 3: Silver tables
+    if not run_silver_tables():
+        logger.error("Setup failed at silver tables creation")
+        return False
+    
     logger.info("=" * 50)
     logger.info("Complete DataWarehouse Setup Successful!")
-    logger.info("Ready for data ingestion")
+    logger.info("Ready for data ingestion and transformation")
     
     return True
 

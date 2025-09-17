@@ -22,13 +22,23 @@ venv/
 *.log
 logs/
 
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
 # OS
 .DS_Store
 Thumbs.db
 
 
-# context and sensitive data
+
+# sensitive data
 context/
-*.md.backup
 
 

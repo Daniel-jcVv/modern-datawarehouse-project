@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 """
-Universal Pipeline Runner - Single Entry Point for All ETL Operations
+Pipeline Runner - Single Entry Point for All ETL Operations
 This script provides a unified interface to run different pipeline stages
 
 Usage: python run_pipeline.py [action]
@@ -13,6 +12,41 @@ from pathlib import Path
 # Add project root to Python path
 project_root = Path(__file__).parent
 sys.path.append(str(project_root))
+
+
+def check_database_exists():
+    """Verify DataWarehouse database exists before running pipelines"""
+    try:
+        import os
+        import pyodbc
+        from dotenv import load_dotenv
+        
+        load_dotenv()
+        
+        host = os.getenv('SQL_SERVER_HOST', 'localhost')
+        port = os.getenv('SQL_SERVER_PORT', '1433')
+        user = os.getenv('SQL_SERVER_USER', 'sa')
+        password = os.getenv('SQL_SERVER_PASSWORD')
+        
+        # Connect to master database to check if DataWarehouse exists
+        connection_string = (
+            f"DRIVER={{ODBC Driver 18 for SQL Server}};"
+            f"SERVER={host},{port};"
+            f"DATABASE=master;"
+            f"UID={user};"
+            f"PWD={password};"
+            f"TrustServerCertificate=yes;"
+            f"Encrypt=no;"
+        )
+        
+        with pyodbc.connect(connection_string, timeout=10) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sys.databases WHERE name = 'DataWarehouse'")
+            result = cursor.fetchone()
+            return result is not None
+            
+    except Exception:
+        return False
 
 
 def show_usage():
@@ -30,6 +64,8 @@ def show_usage():
     print("\nExamples:")
     print("  python run_pipeline.py check   # Verify system is ready")
     print("  python run_pipeline.py bronze  # Run Bronze ETL")
+    print("\nPrerequisites:")
+    print("  Run 'python setup.py' first to initialize database and tables")
     print("\n" + "=" * 60)
 
 
@@ -49,6 +85,14 @@ def run_bronze():
     """Execute Bronze layer pipeline"""
     print("\nStarting Bronze Layer ETL Pipeline...")
     print("-" * 40)
+    
+    # Check if database exists before attempting ETL
+    if not check_database_exists():
+        print("ERROR: DataWarehouse database not found")
+        print("SOLUTION: Run 'python setup.py' to initialize the database and tables")
+        print("Then retry: python run_pipeline.py bronze")
+        return False
+    
     try:
         from src.pipelines.bronze_pipeline import main
         main()
@@ -59,21 +103,55 @@ def run_bronze():
 
 
 def run_silver():
-    """Execute Silver layer pipeline"""
-    print("\nSilver Layer Pipeline")
+    """Execute Silver layer pipeline with quality checks"""
+    print("\nStarting Silver Layer ETL Pipeline...")
     print("-" * 40)
-    print("Silver pipeline is under development")
-    print("   Expected completion: Next sprint")
-    return True
+    
+    # Check if database exists before attempting ETL
+    if not check_database_exists():
+        print("ERROR: DataWarehouse database not found")
+        print("SOLUTION: Run 'python setup.py' to initialize the database and tables")
+        print("Then retry: python run_pipeline.py silver")
+        return False
+    
+    try:
+        # Import and run silver procedures using modern pipeline
+        from src.pipelines.silver_pipeline import main as silver_main
+        from loguru import logger
+        
+        # Execute silver pipeline
+        logger.info("Executing Silver layer pipeline...")
+        silver_main()
+        logger.success("Silver layer pipeline completed")
+        
+        return True
+            
+    except Exception as e:
+        print(f"Error running Silver pipeline: {e}")
+        return False
 
 
 def run_gold():
     """Execute Gold layer pipeline"""
-    print("\n🥇 Gold Layer Pipeline")
+    print("\nStarting Gold Layer Pipeline (Star Schema)...")
     print("-" * 40)
-    print("⚠️  Gold pipeline is under development")
-    print("   Expected completion: Future sprint")
-    return True
+    
+    # Check if database exists before attempting ETL
+    if not check_database_exists():
+        print("ERROR: DataWarehouse database not found")
+        print("SOLUTION: Run 'python setup.py' to initialize the database and tables")
+        print("Then retry: python run_pipeline.py gold")
+        return False
+    
+    try:
+        from src.pipelines.gold_pipeline import main
+        success = main()
+        if success:
+            print("Gold layer Star Schema created successfully!")
+        return success
+    except Exception as e:
+        print(f"Error running Gold pipeline: {e}")
+        return False
 
 
 def main():
