@@ -76,6 +76,20 @@ python run_pipeline.py gold     # Star schema + BI views
     Enterprise Logging    Type Casting             Dimensions
 ```
 
+### Architecture Diagrams
+
+#### Overall Data Warehouse Architecture
+![Data Warehouse Architecture](docs/diagrams/data_architecture_DW.png)
+
+#### Complete Data Flow Pipeline
+![Data Flow Pipeline](docs/diagrams/data_flow_final.png)
+
+#### Star Schema Data Model (Gold Layer)
+![Star Schema Model](docs/diagrams/star_schema_data_model.drawio.png)
+
+#### Docker Containerized Architecture
+![Docker Architecture](docs/diagrams/docker_bronze_architecture.png)
+
 ### Data Sources & Integration
 - **CRM System**: Customer info, Product catalog, Sales transactions
 - **ERP System**: Customer demographics, Location data, Product categories  
@@ -262,16 +276,6 @@ pytest tests/performance/ -v                       # Performance tests
 - **Advanced Analytics**: Real-time dashboards and alerting
 - **Data Governance**: Metadata management and lineage tracking
 
----
-
-## 📞 Contact & Collaboration
-
-**Project Status**: ✅ **Enterprise Production Ready**  
-**Documentation**: Complete technical and operational documentation  
-**Testing**: Comprehensive validation with 100% success rate  
-**Automation**: One-command setup and execution  
-
-*This project demonstrates data engineering capabilities using modern technologies and industry best practices, suitable for production environments in data-intensive industries.*
 
 ---
 
@@ -295,7 +299,7 @@ pytest tests/performance/ -v                       # Performance tests
 
 ## 👋 About Me
 
-Hi! I'm **Judah Daniel Garcia Belman**, a Data Engineer passionate about building robust data solutions.
+Hi! I'm **Daniel Garcia Belman**, a Data Engineer passionate about building robust data solutions.
 
 This project represents a complete enterprise data warehouse that I built from scratch - from solving initial import errors to implementing a full medallion architecture with 100% quality validation. It showcases real problem-solving in action and demonstrates how I approach complex data engineering challenges.
 
